@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แก้ไขข้อมูลเครื่องแอร์ {{ ac.serial }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+            border-bottom: 2px solid #f39c12; /* Orange border */
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 5px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: bold;
+            font-size: 1em;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="tel"],
+        input[type="number"],
+        textarea {
+            width: calc(100% - 24px);
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        button[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            padding: 14px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            width: 100%;
+            margin-top: 30px;
+            transition: background-color 0.3s ease, transform 0.2s;
+            box-shadow: 0 2px 5px rgba(40, 167, 69, 0.2);
+        }
+        button[type="submit"]:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #3498db;
+            text-decoration: none;
+            font-size: 1em;
+            transition: color 0.3s ease;
+        }
+        .back-link:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>แก้ไขข้อมูลเครื่องแอร์ {{ ac.serial }}</h1>
+        <form method="post">
+            <h2>ข้อมูลเครื่องปรับอากาศ</h2>
+            <div class="form-group">
+                <label for="customer_name">ชื่อลูกค้า:</label>
+                <input type="text" id="customer_name" name="customer_name" value="{{ ac.customer_name or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="customer_phone">เบอร์โทรลูกค้า:</label>
+                <input type="tel" id="customer_phone" name="customer_phone" value="{{ ac.customer_phone or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="address">ที่อยู่ติดตั้ง:</label>
+                <textarea id="address" name="address">{{ ac.address or '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="last_clean_date">วันล้างล่าสุด (YYYY-MM-DD):</label>
+                <input type="date" id="last_clean_date" name="last_clean_date" value="{{ ac.last_clean_date or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="next_clean_date">วันนัดล้างครั้งต่อไป (YYYY-MM-DD):</label>
+                <input type="date" id="next_clean_date" name="next_clean_date" value="{{ ac.next_clean_date or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="notes">หมายเหตุเครื่องแอร์:</label>
+                <textarea id="notes" name="notes">{{ ac.notes or '' }}</textarea>
+            </div>
+
+            <h2>บันทึกการบริการล่าสุด</h2>
+            <div class="form-group">
+                <label for="service_date">วันที่ให้บริการ:</label>
+                <input type="date" id="service_date" name="service_date" value="{{ today_date }}" required>
+            </div>
+            <div class="form-group">
+                <label for="service_type">ประเภทบริการ:</label>
+                <input type="text" id="service_type" name="service_type" value="ล้างแอร์" required>
+            </div>
+            <div class="form-group">
+                <label for="problems_found">ปัญหาที่พบ:</label>
+                <textarea id="problems_found" name="problems_found"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="actions_taken">สิ่งที่ดำเนินการ:</label>
+                <textarea id="actions_taken" name="actions_taken" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="parts_replaced">อะไหล่ที่เปลี่ยน (ถ้ามี):</label>
+                <textarea id="parts_replaced" name="parts_replaced"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="service_fee">ค่าบริการ:</label>
+                <input type="number" step="0.01" id="service_fee" name="service_fee">
+            </div>
+            <div class="form-group">
+                <label for="service_notes">หมายเหตุสำหรับบริการนี้:</label>
+                <textarea id="service_notes" name="service_notes"></textarea>
+            </div>
+
+
+            <button type="submit">บันทึกข้อมูล</button>
+        </form>
+        <br>
+        <a href="{{ url_for('show_ac', ac_id=ac.serial) }}" class="back-link">กลับไปหน้าข้อมูล</a>
+    </div>
+</body>
+</html>

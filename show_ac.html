@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข้อมูลเครื่องแอร์ {{ ac.serial if ac else 'ไม่พบ' }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .data-item {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .data-item b {
+            color: #34495e;
+            display: inline-block;
+            width: 150px;
+        }
+        .data-item span {
+            color: #555;
+        }
+        .countdown {
+            background-color: #e8f5e9; /* Light green */
+            color: #28a745; /* Dark green */
+            padding: 15px;
+            border-radius: 8px;
+            margin: 25px 0;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            border: 1px solid #d4edda;
+        }
+        .countdown.overdue {
+            background-color: #ffebee; /* Light red */
+            color: #dc3545; /* Dark red */
+            border: 1px solid #f8d7da;
+        }
+        .no-data {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.1em;
+            padding: 30px;
+        }
+        .button-section {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .btn-technician-login {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+        }
+        .btn-technician-login:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .service-history-section h2 {
+            margin-top: 40px;
+            font-size: 1.8em;
+            color: #2c3e50;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .service-log-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+        }
+        .service-log-item strong {
+            color: #3498db;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .service-log-item p {
+            margin: 5px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if ac %}
+            <h1>ข้อมูลเครื่องแอร์ {{ ac.serial }}</h1>
+            <div class="data-item">
+                <b>ชื่อลูกค้า:</b> <span>{{ ac.customer_name or '-' }}</span>
+            </div>
+            <div class="data-item">
+                <b>เบอร์โทรลูกค้า:</b> <span>{{ ac.customer_phone or '-' }}</span>
+            </div>
+            <div class="data-item">
+                <b>ที่อยู่ติดตั้ง:</b> <span>{{ ac.address or '-' }}</span>
+            </div>
+            <div class="data-item">
+                <b>วันล้างล่าสุด:</b> <span>{{ ac.last_clean_date.strftime('%Y-%m-%d') if ac.last_clean_date else '-' }}</span>
+            </div>
+            <div class="data-item">
+                <b>วันนัดล้างครั้งต่อไป:</b> <span>{{ ac.next_clean_date.strftime('%Y-%m-%d') if ac.next_clean_date else '-' }}</span>
+            </div>
+            <div class="data-item">
+                <b>หมายเหตุ:</b> <span>{{ ac.notes or '-' }}</span>
+            </div>
+
+            <div class="countdown {% if 'เลยกำหนด' in countdown %}overdue{% endif %}">
+                {{ countdown }}
+            </div>
+
+            <div class="service-history-section">
+                <h2>ประวัติการบริการ</h2>
+                {% if service_logs %}
+                    {% for log in service_logs %}
+                        <div class="service-log-item">
+                            <strong>วันที่บริการ:</strong> {{ log.service_date.strftime('%Y-%m-%d') if log.service_date else '-' }}<br>
+                            <strong>ประเภทบริการ:</strong> {{ log.service_type or '-' }}<br>
+                            <strong>สิ่งที่ดำเนินการ:</strong> {{ log.actions_taken or '-' }}<br>
+                            {% if log.problems_found %}
+                                <strong>ปัญหาที่พบ:</strong> {{ log.problems_found }}<br>
+                            {% endif %}
+                            {% if log.parts_replaced %}
+                                <strong>อะไหล่ที่เปลี่ยน:</strong> {{ log.parts_replaced }}<br>
+                            {% endif %}
+                            {% if log.service_fee %}
+                                <strong>ค่าบริการ:</strong> {{ log.service_fee }} บาท<br>
+                            {% endif %}
+                            <strong>ผู้ให้บริการ:</strong> {{ log.technician_name or '-' }}<br>
+                            {% if log.notes %}
+                                <strong>หมายเหตุ:</strong> {{ log.notes }}<br>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="text-align: center; color: #7f8c8d;">ยังไม่มีประวัติการบริการสำหรับเครื่องนี้</p>
+                {% endif %}
+            </div>
+
+
+            <div class="button-section">
+                <form action="{{ url_for('technician_login', ac_id=ac.serial) }}">
+                    <button type="submit" class="btn-technician-login">ช่างเข้าสู่ระบบ (แก้ไขข้อมูล)</button>
+                </form>
+            </div>
+        {% else %}
+            <p class="no-data">{{ countdown }}</p>
+            <p style="text-align: center; color: #7f8c8d;">โปรดตรวจสอบ QR Code หรือรหัสเครื่องแอร์</p>
+        {% endif %}
+    </div>
+</body>
+</html>
